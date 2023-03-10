@@ -1,0 +1,96 @@
+-- example이라는 db생성
+create database example;
+-- example db 접속
+use example;
+
+-- 회원 테이블 생성
+create table member(
+userid int primary key auto_increment,
+name varchar(255) not null,
+password varchar(255) not null,
+email varchar(255) not null unique,
+phonenumber varchar(255) not null unique,
+registerdate datetime not null default now(),
+admin int not null default 0
+);
+-- table들을 보여줌.
+show tables;
+
+select * from member;
+-- member table 구조 보여줌.
+desc member;
+-- member table에 insert
+insert into member(name,password,email,phonenumber)
+values('김성호','1234','seongho0130@gmail.com','010-6225-9708');
+
+insert into member(name,password,email,phonenumber)
+values('bb','bb','bb@gmail.com','010-2222-2222');
+
+select * from member;
+--  이름이 email이 seong으로 시작하는 member 검색
+select * from member where email like 'seong%';
+
+select * from member;
+
+--  watch 테이블생성
+create table watch(
+watchid int primary key auto_increment,
+userid int not null,
+name varchar(255) not null,
+price int not null,
+description varchar(255) default '',
+category varchar(255) not null,
+registerdate datetime not null default now(),
+warranty int not null default 0,
+selling int not null default 0,
+likes int not null default 0,
+foreign key(userid) references member(userid) -- member table의 userid를 외래키로 사용
+);
+
+--  insert문에 subquery 사용불가 하므로 이렇게 data를 넣어줌.
+insert into watch( name,price,description,category,userid) 
+select 'omega',5000000,'오메가시계','기계식', userid from member where name = 'aa';
+
+insert into watch(name,price,description, category, userid)
+select 'rolex',10000000,'롤렉스시계','쿼츠',userid from member where name = 'aa';
+
+-- userid와 name을 이용하여 등록한 시계 확인
+select m.name, w.name from member m, watch w where m.userid = w.userid and m.name like 'aa';
+
+select * from watch where warranty = 0;
+
+select * from member;
+
+create table pick(
+ pickid int primary key auto_increment,
+ watchid int,
+ userid int,
+ foreign key(userid) references member(userid),
+ foreign key(watchid) references watch(watchid)
+);
+
+select * from member;
+select * from pick;
+
+
+select watchid from watch where name like 'rolex';
+select userid from member where name like 'aa';
+
+select userid from member where name like '김성호';
+select watchid from watch where name like 'omega';
+
+--  찜 목록 추가 시 insert 쿼리문
+insert into pick 
+select userid, watchid from member, watch 
+where member.name like '김성호' and
+watch.name like 'omega';
+
+select * from pick;
+select * from watch;
+
+-- 찜 리스트에서 userid가 3인 멤버의 찜 목록 
+select w.name, w.userid, w.likes from watch w 
+where w.userid in (select userid from pick) and w.watchid in (select watchid from pick) and w.userid = 3;
+
+select * from pick;
+commit;
