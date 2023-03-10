@@ -66,3 +66,5 @@
 - tailwind
 
 # db 모델링
+![SharedScreenshot2](https://user-images.githubusercontent.com/124124583/224296586-eb61bc1b-fddb-4150-a3a8-d29718b139de.jpg)
+
